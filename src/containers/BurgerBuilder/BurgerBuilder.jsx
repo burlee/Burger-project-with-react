@@ -11,7 +11,7 @@ export default class BurgerBuilder extends Component {
             <div>
                 BurgerBuilder
             </div>
-      </Aux>
+        </Aux>
     )
   }
 }
