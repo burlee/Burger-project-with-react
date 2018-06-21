@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import Aux from '../../hoc/aux_x'
 import Burger from '../../burger/Burger'
 import BurgerControls from '../../burger/BuildControls/BuildControls'
+import Modal from '../../components/UI/Modal/Modal'
+import OrderSummary from '../../burger/OrderSummary/OrderSummary'
 
 const INGREDIENS_PRICE = {
   salad: 0.4,
@@ -17,7 +19,20 @@ export default class BurgerBuilder extends Component {
       cheese: 0,
       meat: 0
     },
-    totalPrice: 0
+    totalPrice: 0,
+    purchase: false
+  }
+
+  updatePurchase = (ingrediens) => {
+    
+    const sum = Object.keys(ingrediens)
+      .map(igKey => {
+        return ingrediens[igKey]
+    })
+      .reduce((sum, el) => {
+        return  sum + el;
+      }, 0)
+    this.setState({ purchase: sum > 0})
   }
 
   addIngredientHandler = (type) => {
@@ -34,6 +49,7 @@ export default class BurgerBuilder extends Component {
     const newPrice = oldPrice + priceAddition;
 
     this.setState({ totalPrice: newPrice, ingrediens: updateIngrediens})
+    this.updatePurchase(updateIngrediens);
   }
 
   removeIngredientHandler = (type) => {
@@ -53,7 +69,7 @@ export default class BurgerBuilder extends Component {
     const newPrice = oldPrice - priceDedaction;
 
     this.setState({ totalPrice: newPrice, ingrediens: updateIngrediens})
-
+    this.updatePurchase(updateIngrediens);
   }
 
 
@@ -70,11 +86,15 @@ export default class BurgerBuilder extends Component {
     return (
 
         <Aux>
+          <Modal>
+            <OrderSummary ingredients={this.state.ingrediens} />
+          </Modal>
             <Burger ingrediens={this.state.ingrediens} />
             <BurgerControls  
               ingredientAdded={this.addIngredientHandler} 
               removeIngredient={this.removeIngredientHandler}
               disabled={disabledInfo}
+              purchase={this.state.purchase}
               price={this.state.totalPrice}
               />
         </Aux>
