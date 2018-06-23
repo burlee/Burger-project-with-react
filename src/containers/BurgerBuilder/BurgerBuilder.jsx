@@ -103,9 +103,8 @@ export default class BurgerBuilder extends Component {
         disabledInfo[key] = disabledInfo[key] <= 0 ;
     }
 
-    console.log(disabledInfo)
+    // console.log(disabledInfo)
     return (
-
         <Aux>
           <Modal show={this.state.purchasing} modalClosed={this.closeModalHandler}>
             <OrderSummary 
