@@ -4,16 +4,17 @@ import Aux from '../../../hoc/aux_x';
 import Backdrop from '../Backdrop/Backdrop'
 
 class Modal extends Component {
+    
     shouldComponentUpdate(nextProps, nextState){
-        return nextProps.show !== this.props.show;
+        return nextProps.show !== this.props.show || nextProps.children !== this.props.children
         
     } //We check props show that's update and we execute Modal component
     componentWillUpdate(){
         console.log('[MODAL]')
     }
-    componentDidMount(){
-        console.log(this.props)
-    }// This component cycle method is execute immediately after rendter component to DOM 
+    // componentDidMount(){
+    //     console.log(this.props)
+    // }This component cycle method is execute immediately after rendter component to DOM 
     render(){
         return (
             <Aux>
