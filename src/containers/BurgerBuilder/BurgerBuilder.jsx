@@ -1,11 +1,11 @@
-import React, { Component } from 'react'
-import Aux from '../../hoc/aux_x'
-import Burger from '../../burger/Burger'
-import BuildControls from '../../burger/BuildControls/BuildControls'
-import Modal from '../../components/UI/Modal/Modal'
-import OrderSummary from '../../burger/OrderSummary/OrderSummary'
-import Axios from '../../axios-orders'
+import React, { Component } from 'react';
+import Axios from '../../axios-orders';
+import BuildControls from '../../burger/BuildControls/BuildControls';
+import Burger from '../../burger/Burger';
+import OrderSummary from '../../burger/OrderSummary/OrderSummary';
+import Modal from '../../components/UI/Modal/Modal';
 import Spinner from '../../components/UI/Spinner/Spinner';
+import Aux from '../../hoc/aux_x';
 import withErrorHandler from '../../hoc/errorHandler/errorHandler';
 
 const INGREDIENS_PRICE = {
@@ -16,16 +16,23 @@ const INGREDIENS_PRICE = {
 }
 class BurgerBuilder extends Component {
   state = {
-    ingrediens: {
-      salad: 0,
-      bacon: 0,
-      cheese: 0,
-      meat: 0
-    },
+    ingrediens: null, 
     totalPrice: 0,
     purchase: false,
     purchasing: false,
-    loading: false
+    loading: false,
+    error: false
+  }
+  
+  componentDidMount(){
+    Axios.get('ingrediens.json')
+      .then( response => {
+        this.setState({ingrediens: response.data})
+        console.log(response) // Fetch and set data to ingredient Object...
+      })
+      .catch( error => this.setState({error: true}))
+
+      console.log(this.state.error)
   }
 
   updatePurchase = (ingrediens) => {
@@ -129,31 +136,41 @@ class BurgerBuilder extends Component {
         disabledInfo[key] = disabledInfo[key] <= 0 ;
     }
 
-    let orderSummary = <OrderSummary 
+    //If ingrediens has false value we display Spinner. When we fetch data from FireBase we have display component.
+    let orderSummary = <Spinner />;
+    let burger = this.state.error ? <p style={{ textAlign: 'center'}}>Wystąpił błąd</p> : <Spinner />;
+
+  
+    if(this.state.ingrediens){
+        burger = (
+        <Aux>
+          <Burger ingrediens={this.state.ingrediens} />
+          <BuildControls  
+            ingredientAdded={this.addIngredientHandler} 
+            removeIngredient={this.removeIngredientHandler}
+            disabled={disabledInfo}
+            purchase={this.state.purchase}
+            price={this.state.totalPrice}
+            ordered={this.purchasingHandler}
+        
+        /></Aux>);
+
+        orderSummary = <OrderSummary 
         ingredients={this.state.ingrediens}
         purchaseContinue={this.purchaseContinueHandler} 
         purchaseCancel={this.purchaseCancelHandler}
         price={this.state.totalPrice}
       />
 
-    if(this.state.loading){
-      orderSummary = <Spinner />
-    }
+    };
+
     // console.log(disabledInfo)
     return (
         <Aux>
           <Modal show={this.state.purchasing} modalClosed={this.closeModalHandler}>
             {orderSummary}
           </Modal>
-            <Burger ingrediens={this.state.ingrediens} />
-            <BuildControls  
-              ingredientAdded={this.addIngredientHandler} 
-              removeIngredient={this.removeIngredientHandler}
-              disabled={disabledInfo}
-              purchase={this.state.purchase}
-              price={this.state.totalPrice}
-              ordered={this.purchasingHandler}
-              />
+            {burger}
         </Aux>
     )
   }

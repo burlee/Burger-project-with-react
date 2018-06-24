@@ -7,13 +7,19 @@ import Aux from '../aux_x';
       state ={
           error: null
       }
-        componentDidMount(){
-            axios.interceptors.response.use( req  =>{
-                this.setState({error: null})
+        componentWillMount(){
+            this.reqInterceptor = axios.interceptors.response.use( req  =>{
+                this.setState({error: null});
+                return req;
             })
-            axios.interceptors.response.use(null, error =>{
+            this.resInterceptor =axios.interceptors.response.use( null, error =>{
                 this.setState({error: error})
             })
+        }
+
+        componentWillUnmount(){
+            axios.interceptors.request.eject(this.reqInterceptor);
+            axios.interceptors.response.eject(this.resInterceptor);
         }
 
         errorHandlerConfirmed = () => {
@@ -23,7 +29,7 @@ import Aux from '../aux_x';
             return(
                 <Aux>
                   <Modal show={this.state.error} 
-                            modalClosed={this.errorHandlerConfirmed} >
+                         modalClosed={this.errorHandlerConfirmed} >
 
                       {this.state.error ? this.state.error.message : null}
 

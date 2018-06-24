@@ -14,7 +14,7 @@ class Modal extends Component {
     }
     // componentDidMount(){
     //     console.log(this.props)
-    // }This component cycle method is execute immediately after rendter component to DOM 
+    // }This component cycle method is execute immediately after render component to DOM 
     render(){
         return (
             <Aux>
